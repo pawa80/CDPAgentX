@@ -17,12 +17,21 @@ export default function GuardrailsCaps({ onComplete }) {
   return (
     <section className="space-y-4">
       <h2 className="text-xl font-semibold text-amber-400">Guardrails & Caps</h2>
+      <p className="text-slate-400 text-sm">
+        Keep campaigns compliant by setting message caps and forbidden words.
+      </p>
       <label className="block">
-        <span className="text-sm">Daily message cap</span>
+        <span className="text-sm">
+          Daily message cap{' '}
+          <span className="text-xs text-slate-500">(max per user/day)</span>
+        </span>
         <input type="number" className="w-full text-black p-1" value={cap} onChange={e => setCap(Number(e.target.value))} />
       </label>
       <label className="block">
-        <span className="text-sm">Forbidden words</span>
+        <span className="text-sm">
+          Forbidden words{' '}
+          <span className="text-xs text-slate-500">(comma-separated)</span>
+        </span>
         <textarea className="w-full text-black p-1" rows="3" value={banned} onChange={e => setBanned(e.target.value)} />
       </label>
       <div className="bg-slate-800 h-4 rounded-full" aria-label="Compliance bar">
