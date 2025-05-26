@@ -29,12 +29,29 @@ export default function SegmentationBasics({ onComplete }) {
         Adjust RFM thresholds to see how strict rules narrow or widen your audience.
         Toggle “Similarity search” to bring in look-alike customers.
       </p>
+      {/* 🛈 rfm-definitions */}
+      <ul className="text-slate-400 text-sm space-y-1 pl-4 list-disc">
+        <li>
+          <strong>Recency (R)</strong>: how many days since the customer’s last
+          purchase or engagement. Lower means “freshly active”.
+        </li>
+        <li>
+          <strong>Frequency (F)</strong>: how often the customer bought or
+          engaged within the look-back window. Higher = loyal repeaters.
+        </li>
+        <li>
+          <strong>Monetary (M)</strong>: the customer’s total spend (or LTV) in
+          the same window. Higher means bigger spenders.
+        </li>
+      </ul>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Slider
           label={
             <span>
-              Recency days{' '}
-              <span className="text-xs text-slate-500">(lower includes dormant users)</span>
+              Recency days
+              <span className="ml-2 text-xs text-amber-300 italic">
+                (drag left to include customers who’ve been quiet longer)
+              </span>
             </span>
           }
           value={recency}
@@ -45,8 +62,10 @@ export default function SegmentationBasics({ onComplete }) {
         <Slider
           label={
             <span>
-              Frequency{' '}
-              <span className="text-xs text-slate-500">(higher = power shoppers)</span>
+              Frequency
+              <span className="ml-2 text-xs text-amber-300 italic">
+                (drag right to require more repeat activity)
+              </span>
             </span>
           }
           value={frequency}
@@ -57,8 +76,10 @@ export default function SegmentationBasics({ onComplete }) {
         <Slider
           label={
             <span>
-              Monetary ${' '}
-              <span className="text-xs text-slate-500">(minimum lifetime spend)</span>
+              Monetary $
+              <span className="ml-2 text-xs text-amber-300 italic">
+                (drag right to target higher spenders)
+              </span>
             </span>
           }
           value={monetary}
