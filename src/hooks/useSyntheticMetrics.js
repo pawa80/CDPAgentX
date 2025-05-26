@@ -1,25 +1,39 @@
-import { useState, useEffect } from 'react';
+// 🛠 useSyntheticMetrics.js – smoother optimiser logic
+import { useEffect, useRef, useState } from 'react';
 
-/**
- * Provides a synthetic metric that updates every 750ms.
- * The simple math keeps values within 0 - 1 so UI can
- * colour-shift based on thresholds.
- */
-export default function useSyntheticMetrics(initial = 0.5) {
-  const [value, setValue] = useState(initial);
+// helper
+const rand = (min, max) => Math.random() * (max - min) + min;
+
+// hook returns the smoothed delta plus a tiny spark of noise so it feels alive
+export default function useSyntheticDelta({ explore }) {
+  const [delta, setDelta] = useState(-25);          // start below target
+  const history = useRef([]);
 
   useEffect(() => {
-    // update metric with slight random walk
     const id = setInterval(() => {
-      setValue(v => {
-        let next = v + (Math.random() - 0.5) * 0.1;
-        if (next > 1) next = 1;
-        if (next < 0) next = 0;
-        return Number(next.toFixed(2));
-      });
-    }, 750);
-    return () => clearInterval(id);
-  }, []);
+      // 1 ─ jitter magnitude is tiny
+      const baseJitter = 0.5;
+      let next = delta + rand(-baseJitter, baseJitter);
 
-  return value;
+      // 2 ─ explore slider widens the jitter window gently
+      const exploreJitter = (explore / 100) * 0.5;  // max ±0.5 when explore = 100
+      next += rand(-exploreJitter, exploreJitter);
+
+      // 3 ─ slow pull toward zero (faster if explore is low)
+      const damping = explore < 30 ? 0.97 : explore > 70 ? 0.90 : 0.94;
+      next *= damping;
+
+      // 4 ─ keep a rolling window of the last 10 values, use their mean
+      history.current.push(next);
+      if (history.current.length > 10) history.current.shift();
+      const avg =
+        history.current.reduce((s, v) => s + v, 0) / history.current.length;
+
+      setDelta(parseFloat(avg.toFixed(1)));          // one-decimal precision
+    }, 1000); // run every second
+
+    return () => clearInterval(id);
+  }, [delta, explore]);
+
+  return delta;
 }

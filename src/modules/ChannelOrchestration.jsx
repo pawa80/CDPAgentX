@@ -27,6 +27,11 @@ export default function ChannelOrchestration({ onComplete }) {
       <p className="text-slate-400 text-sm">
         Drag channels to test how mix and order boost open/click lift.
       </p>
+      <p className="text-slate-400 text-sm">
+        The order matters because each touch pays a diminishing return. The first channel
+        gets headline attention; later touches act as nudges or reminders. Drag channels
+        until the lift number stops climbing—past that point you’re spamming.
+      </p>
       <ul className="space-y-2">
         {steps.map((step, i) => (
           <li key={step} className="flex justify-between items-center bg-slate-800 p-2 rounded">

@@ -44,6 +44,12 @@ export default function SegmentationBasics({ onComplete }) {
           the same window. Higher means bigger spenders.
         </li>
       </ul>
+      <p className="text-slate-400 text-sm mt-2">
+        In real CDPs you rarely set R, F, M in isolation. You’ll combine them with geography,
+        lifecycle stage, or predictive scores. The sliders here isolate the principle:
+        <em>tighten a rule and the pool shrinks; loosen and it grows.</em> Notice how 70 % reach
+        is the “green” zone—large enough to test, small enough to stay relevant.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Slider
           label={
