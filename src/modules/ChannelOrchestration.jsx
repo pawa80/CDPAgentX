@@ -24,6 +24,9 @@ export default function ChannelOrchestration({ onComplete }) {
   return (
     <section className="space-y-4">
       <h2 className="text-xl font-semibold text-amber-400">Channel Orchestration</h2>
+      <p className="text-slate-400 text-sm">
+        Drag channels to test how mix and order boost open/click lift.
+      </p>
       <ul className="space-y-2">
         {steps.map((step, i) => (
           <li key={step} className="flex justify-between items-center bg-slate-800 p-2 rounded">
@@ -35,6 +38,7 @@ export default function ChannelOrchestration({ onComplete }) {
           </li>
         ))}
       </ul>
+      <span className="text-xs text-slate-500 ml-2">(first touch carries most weight)</span>
       <MetricCard label="Open/Click lift" value={lift} threshold={0.05} />
     </section>
   );

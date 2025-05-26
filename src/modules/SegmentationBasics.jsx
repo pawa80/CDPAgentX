@@ -24,12 +24,59 @@ export default function SegmentationBasics({ onComplete }) {
   return (
     <section className="space-y-4">
       <h2 className="text-xl font-semibold text-amber-400">Segmentation Basics</h2>
+      {/* 🛈 section-explainer */}
+      <p className="text-slate-400 text-sm">
+        Adjust RFM thresholds to see how strict rules narrow or widen your audience.
+        Toggle “Similarity search” to bring in look-alike customers.
+      </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Slider label="Recency days" value={recency} onChange={setRecency} min={0} max={60} />
-        <Slider label="Frequency" value={frequency} onChange={setFrequency} min={1} max={10} />
-        <Slider label="Monetary $" value={monetary} onChange={setMonetary} min={0} max={500} />
+        <Slider
+          label={
+            <span>
+              Recency days{' '}
+              <span className="text-xs text-slate-500">(lower includes dormant users)</span>
+            </span>
+          }
+          value={recency}
+          onChange={setRecency}
+          min={0}
+          max={60}
+        />
+        <Slider
+          label={
+            <span>
+              Frequency{' '}
+              <span className="text-xs text-slate-500">(higher = power shoppers)</span>
+            </span>
+          }
+          value={frequency}
+          onChange={setFrequency}
+          min={1}
+          max={10}
+        />
+        <Slider
+          label={
+            <span>
+              Monetary ${' '}
+              <span className="text-xs text-slate-500">(minimum lifetime spend)</span>
+            </span>
+          }
+          value={monetary}
+          onChange={setMonetary}
+          min={0}
+          max={500}
+        />
       </div>
-      <Toggle label="Similarity search" checked={similarity} onChange={setSimilarity} />
+      <Toggle
+        label={
+          <span>
+            Similarity search{' '}
+            <span className="text-xs text-slate-500">(vector look-alikes)</span>
+          </span>
+        }
+        checked={similarity}
+        onChange={setSimilarity}
+      />
       <MetricCard label="Reachable audience" value={reach} threshold={0.7} />
     </section>
   );
