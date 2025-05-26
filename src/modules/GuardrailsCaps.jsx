@@ -20,6 +20,12 @@ export default function GuardrailsCaps({ onComplete }) {
       <p className="text-slate-400 text-sm">
         Keep campaigns compliant by setting message caps and forbidden words.
       </p>
+      <p className="text-slate-400 text-sm">
+        Every region has its own anti-spam laws (e.g., GDPR, CAN-SPAM). Caps and forbidden
+        words are the blunt instruments a CDP enforces automatically. In practice you’d
+        layer softer guardrails—send-time capping, fatigue rules—but this slider shows
+        the hard stop effect.
+      </p>
       <label className="block">
         <span className="text-sm">
           Daily message cap{' '}

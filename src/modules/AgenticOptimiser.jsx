@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Slider from '../components/Slider';
 import MetricCard from '../components/MetricCard';
-import useSyntheticMetrics from '../hooks/useSyntheticMetrics';
+import useSyntheticDelta from '../hooks/useSyntheticMetrics';
 
 /**
  * Demonstrates agentic optimisation loop aiming to hit a revenue goal.
@@ -12,7 +12,7 @@ export default function AgenticOptimiser({ onComplete }) {
   const [explore, setExplore] = useState(50);
 
   // delta oscillates around zero
-  const delta = useSyntheticMetrics(0.5) - 0.5;
+  const delta = useSyntheticDelta({ explore });
 
   useEffect(() => {
     if (delta <= 0 && onComplete) onComplete();
@@ -32,8 +32,12 @@ export default function AgenticOptimiser({ onComplete }) {
     <section className="space-y-4">
       <h2 className="text-xl font-semibold text-amber-400">Agentic Optimiser</h2>
       <p className="text-slate-400 text-sm">
-        Give the optimiser a revenue goal, tolerance band, and decide how much to
-        explore new tactics versus exploit proven winners.
+        This optimiser is a stand-in for Bloomreach’s Experiment engine or any reinforcement
+        learning loop. Give it a revenue target and it will test tactics (<em>explore</em>)
+        while exploiting winners (<em>exploit</em>). The green goal delta means you’re within
+        tolerance. Lower tolerance for stricter goals or slide Explore to see how volatility
+        changes. The smoothed line updates once per second so you can link your actions to
+        the trend.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <label className="flex flex-col space-y-1">
