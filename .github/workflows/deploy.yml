@@ -1,18 +1,39 @@
 name: Deploy
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main        # run the workflow on every push to main
+
+permissions:
+  contents: write   # needed so the deploy action can push gh-pages
+
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
+      # Pull the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js 18.x
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          version: 9
-      - run: pnpm install
-      - run: pnpm run build
-      - uses: JamesIves/github-pages-deploy-action@v4
+          node-version: 18
+
+      # Install dependencies (reads package.json / package-lock.json)
+      - name: Install dependencies
+        run: npm ci
+
+      # Build the project (runs vite build -> dist/)
+      - name: Build project
+        run: npm run build
+
+      # Publish dist/ to gh-pages branch
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages
-          folder: dist
+          branch: gh-pages     # target branch
+          folder: dist         # source folder to publish
