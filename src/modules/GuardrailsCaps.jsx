@@ -8,7 +8,7 @@ import useSyntheticMetrics from '../hooks/useSyntheticMetrics';
 export default function GuardrailsCaps({ onComplete }) {
   const [cap, setCap] = useState(5);
   const [banned, setBanned] = useState('');
-  const compliance = useSyntheticMetrics(0.5);
+  const compliance = useSyntheticMetrics(0.5, { cap, banned });
 
   useEffect(() => {
     if (compliance >= 1 && onComplete) onComplete();

@@ -14,7 +14,7 @@ export default function SegmentationBasics({ onComplete }) {
   const [similarity, setSimilarity] = useState(false);
 
   // synthetic % of reachable audience
-  const reach = useSyntheticMetrics(0.5);
+  const reach = useSyntheticMetrics(0.5, { recency, frequency, monetary, similarity });
 
   // flag completion when audience reach high
   useEffect(() => {

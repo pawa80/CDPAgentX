@@ -7,7 +7,7 @@ import useSyntheticMetrics from '../hooks/useSyntheticMetrics';
  */
 export default function ChannelOrchestration({ onComplete }) {
   const [steps, setSteps] = useState(['Email', 'Push', 'Ads']);
-  const lift = useSyntheticMetrics(0.03);
+  const lift = useSyntheticMetrics(0.03, { steps });
 
   // signal completion when lift sufficiently high
   useEffect(() => {

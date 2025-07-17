@@ -1,39 +1,55 @@
-// 🛠 useSyntheticMetrics.js – smoother optimiser logic
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-// helper
-const rand = (min, max) => Math.random() * (max - min) + min;
-
-// hook returns the smoothed delta plus a tiny spark of noise so it feels alive
-export default function useSyntheticDelta({ explore }) {
-  const [delta, setDelta] = useState(-25);          // start below target
-  const history = useRef([]);
+/**
+ * Hook that generates synthetic metrics based on input parameters
+ * Returns a value between 0 and 1 that responds to parameter changes
+ */
+export default function useSyntheticMetrics(baseValue = 0.5, params = {}) {
+  const [value, setValue] = useState(baseValue);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      // 1 ─ jitter magnitude is tiny
-      const baseJitter = 0.5;
-      let next = delta + rand(-baseJitter, baseJitter);
+    // Calculate synthetic value based on parameters
+    let newValue = baseValue;
+    
+    // Apply parameter influences
+    Object.entries(params).forEach(([key, paramValue]) => {
+      switch (key) {
+        case 'recency':
+          // Lower recency (more recent) = higher reach
+          newValue += (60 - paramValue) / 600;
+          break;
+        case 'frequency':
+          // Higher frequency requirements = lower reach
+          newValue -= (paramValue - 1) / 20;
+          break;
+        case 'monetary':
+          // Higher monetary requirements = lower reach
+          newValue -= paramValue / 1000;
+          break;
+        case 'similarity':
+          // Similarity search increases reach
+          newValue += paramValue ? 0.2 : 0;
+          break;
+        case 'steps':
+          // More orchestration steps = higher lift
+          newValue += (paramValue.length - 1) * 0.02;
+          break;
+        case 'cap':
+          // Higher caps = better compliance
+          newValue += Math.min(paramValue / 10, 0.3);
+          break;
+        case 'banned':
+          // More banned words = lower compliance initially, then higher
+          const wordCount = paramValue.split(',').filter(w => w.trim()).length;
+          newValue += wordCount > 0 ? Math.min(wordCount * 0.1, 0.4) : 0;
+          break;
+      }
+    });
 
-      // 2 ─ explore slider widens the jitter window gently
-      const exploreJitter = (explore / 100) * 0.5;  // max ±0.5 when explore = 100
-      next += rand(-exploreJitter, exploreJitter);
+    // Keep value between 0 and 1
+    newValue = Math.max(0, Math.min(1, newValue));
+    setValue(newValue);
+  }, [baseValue, params]);
 
-      // 3 ─ slow pull toward zero (faster if explore is low)
-      const damping = explore < 30 ? 0.97 : explore > 70 ? 0.90 : 0.94;
-      next *= damping;
-
-      // 4 ─ keep a rolling window of the last 10 values, use their mean
-      history.current.push(next);
-      if (history.current.length > 10) history.current.shift();
-      const avg =
-        history.current.reduce((s, v) => s + v, 0) / history.current.length;
-
-      setDelta(parseFloat(avg.toFixed(1)));          // one-decimal precision
-    }, 1000); // run every second
-
-    return () => clearInterval(id);
-  }, [delta, explore]);
-
-  return delta;
+  return value;
 }
