@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Slider from '../components/Slider';
 import MetricCard from '../components/MetricCard';
-import useSyntheticDelta from '../hooks/useSyntheticMetrics';
+import useSyntheticMetrics from '../hooks/useSyntheticMetrics';
 
 /**
  * Demonstrates agentic optimisation loop aiming to hit a revenue goal.
@@ -11,22 +11,25 @@ export default function AgenticOptimiser({ onComplete }) {
   const [tolerance, setTolerance] = useState(5);
   const [explore, setExplore] = useState(50);
 
-  // delta oscillates around zero
-  const delta = useSyntheticDelta({ explore });
+  // performance metric that responds to exploration vs exploitation
+  const performance = useSyntheticMetrics(0.8, { explore, target, tolerance });
+  
+  // calculate goal delta based on how close we are to target
+  const goalDelta = Math.abs(performance - (target / 1000)) / (target / 1000);
 
   useEffect(() => {
-    if (delta <= 0 && onComplete) onComplete();
-  }, [delta, onComplete]);
+    if (goalDelta <= tolerance / 100 && onComplete) onComplete();
+  }, [goalDelta, tolerance, onComplete]);
 
   // track last 30 points for sparkline
   const [points, setPoints] = useState([]);
   useEffect(() => {
-    setPoints(p => [...p.slice(-29), delta]);
-  }, [delta]);
+    setPoints(p => [...p.slice(-29), performance]);
+  }, [performance]);
 
   const width = 200;
   const height = 80;
-  const path = points.map((d, i) => `${(i / 29) * width},${height - ((d + 1) / 2) * height}`).join(' ');
+  const path = points.map((d, i) => `${(i / 29) * width},${height - d * height}`).join(' ');
 
   return (
     <section className="space-y-4">
@@ -68,7 +71,7 @@ export default function AgenticOptimiser({ onComplete }) {
       <svg width={width} height={height} className="bg-slate-800 rounded">
         <polyline points={path} fill="none" stroke="#10b981" strokeWidth="2" />
       </svg>
-      <MetricCard label="Goal delta" value={1 - Math.max(Math.min(delta + 1, 1), 0)} threshold={1} />
+      <MetricCard label="Goal delta" value={1 - goalDelta} threshold={0.9} />
     </section>
   );
 }
