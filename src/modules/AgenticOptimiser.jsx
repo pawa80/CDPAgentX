@@ -14,22 +14,25 @@ export default function AgenticOptimiser({ onComplete }) {
   // performance metric that responds to exploration vs exploitation
   const performance = useSyntheticMetrics(0.8, { explore, target, tolerance });
   
-  // calculate goal delta based on how close we are to target
-  const goalDelta = Math.abs(performance - (target / 1000)) / (target / 1000);
+  // calculate actual performance vs target
+  const actualRevenue = performance * target;
+  const deltaFromTarget = ((actualRevenue - target) / target) * 100;
+  const isWithinTolerance = Math.abs(deltaFromTarget) <= tolerance;
 
   useEffect(() => {
-    if (goalDelta <= tolerance / 100 && onComplete) onComplete();
-  }, [goalDelta, tolerance, onComplete]);
+    if (isWithinTolerance && onComplete) onComplete();
+  }, [isWithinTolerance, onComplete]);
 
   // track last 30 points for sparkline
   const [points, setPoints] = useState([]);
   useEffect(() => {
-    setPoints(p => [...p.slice(-29), performance]);
-  }, [performance]);
+    setPoints(p => [...p.slice(-29), actualRevenue]);
+  }, [actualRevenue]);
 
   const width = 200;
   const height = 80;
-  const path = points.map((d, i) => `${(i / 29) * width},${height - d * height}`).join(' ');
+  const maxValue = Math.max(...points, target);
+  const path = points.map((d, i) => `${(i / 29) * width},${height - (d / maxValue) * height}`).join(' ');
 
   return (
     <section className="space-y-4">
@@ -69,9 +72,51 @@ export default function AgenticOptimiser({ onComplete }) {
         />
       </div>
       <svg width={width} height={height} className="bg-slate-800 rounded">
+        {/* Target line */}
+        <line 
+          x1="0" 
+          y1={height - (target / Math.max(...points, target)) * height} 
+          x2={width} 
+          y2={height - (target / Math.max(...points, target)) * height} 
+          stroke="#f59e0b" 
+          strokeWidth="1" 
+          strokeDasharray="3,3"
+        />
         <polyline points={path} fill="none" stroke="#10b981" strokeWidth="2" />
       </svg>
-      <MetricCard label="Goal delta" value={1 - goalDelta} threshold={0.9} />
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <MetricCard 
+          label="Current revenue" 
+          value={actualRevenue / 1000} 
+          threshold={target / 1000} 
+          suffix="k" 
+        />
+        <div className="p-4 bg-slate-900 rounded-lg border border-slate-800">
+          <p className="text-sm">Performance vs Target</p>
+          <p className={`text-2xl font-bold ${
+            Math.abs(deltaFromTarget) <= tolerance 
+              ? 'text-emerald-500' 
+              : deltaFromTarget > 0 
+                ? 'text-blue-400' 
+                : 'text-red-400'
+          }`}>
+            {deltaFromTarget > 0 ? '+' : ''}{deltaFromTarget.toFixed(1)}%
+          </p>
+          <p className="text-xs text-slate-400">
+            {deltaFromTarget > 0 ? 'above target' : deltaFromTarget < 0 ? 'below target' : 'on target'}
+          </p>
+        </div>
+        <div className="p-4 bg-slate-900 rounded-lg border border-slate-800">
+          <p className="text-sm">Status</p>
+          <p className={`text-lg font-bold ${isWithinTolerance ? 'text-emerald-500' : 'text-amber-400'}`}>
+            {isWithinTolerance ? '✓ On Target' : '⚠ Optimizing'}
+          </p>
+          <p className="text-xs text-slate-400">
+            ±{tolerance}% tolerance
+          </p>
+        </div>
+      </div>
     </section>
   );
 }
