@@ -16,15 +16,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2 – set up Node 18
+      # 2 – set up Node 20
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      # 3 – install dependencies (creates package-lock.json)
+      # 3 – install dependencies from the lockfile
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      # 3b – simulation engine tests
+      - name: Test
+        run: npm test
 
       # 4 – build the site (Vite outputs to dist/)
       - name: Build project
