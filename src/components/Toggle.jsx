@@ -1,18 +1,14 @@
 import React from 'react';
 
 /** Toggle switch used across modules */
-export default function Toggle({ checked, onChange, label }) {
+export default function Toggle({ checked, onChange, label, hint }) {
   return (
-    <label className="flex items-center space-x-2 cursor-pointer">
-      <span className="text-sm">{label}</span>
-      <input
-        type="checkbox"
-        className="sr-only peer"
-        checked={checked}
-        onChange={e => onChange(e.target.checked)}
-      />
-      <span className="relative inline-block w-10 h-6 bg-slate-600 rounded-full peer-checked:bg-indigo-600">
-        <span className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
+    <label className="flex cursor-pointer items-start gap-3">
+      <input type="checkbox" className="peer sr-only" checked={checked} onChange={e => onChange(e.target.checked)} />
+      <span className="relative mt-0.5 inline-block h-6 w-10 shrink-0 rounded-full bg-slate-600 transition-colors peer-checked:bg-indigo-600 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-400 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-4" />
+      <span className="text-sm">
+        {label}
+        {hint && <span className="block text-xs text-slate-500">{hint}</span>}
       </span>
     </label>
   );
